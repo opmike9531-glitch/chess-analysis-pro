@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Chess Analysis Pro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <style>
         body { background: #0a0a0a; color: #eee; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         header { padding: 20px; font-size: 24px; font-weight: bold; color: #fff; letter-spacing: 2px; }
@@ -54,7 +54,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     
     <script>
         var moveCount = 1;
@@ -86,4 +86,25 @@
         stockfish.onmessage = function(event) {
             if (event.data.includes('score cp')) {
                 let parts = event.data.split(' ');
-                let score = parts[parts.indexOf
+                let score = parts[parts.indexOf('cp') + 1] / 100;
+                document.getElementById('eval-score').innerText = score;
+                document.getElementById('eval-score').style.color = score >= 0 ? "#4caf50" : "#f44336";
+                document.getElementById('engine-status').innerText = "DONE";
+            }
+        };
+
+        function runAnalysis() {
+            document.getElementById('engine-status').innerText = "THINKING...";
+            stockfish.postMessage('position fen ' + board.fen() + " w KQkq - 0 1");
+            stockfish.postMessage('go depth 16');
+        }
+
+        function resetGame() {
+            board.start();
+            historyEl.innerHTML = "1. (Wait for move...)";
+            moveCount = 1;
+            document.getElementById('eval-score').innerText = "0.0";
+        }
+    </script>
+</body>
+</html>
